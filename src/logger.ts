@@ -1,4 +1,3 @@
-import { isNullOrUndefined } from "util";
 import { ILogTarget, ILogger, LogLevel } from "./contracts"
 
 export class Logger implements ILogger {
@@ -14,7 +13,10 @@ export class Logger implements ILogger {
     }
 
     public add(target: ILogTarget): void {
-        this.logTargets.push(target);
+        let i = this.logTargets.indexOf(target);
+        if (i == -1) {
+            this.logTargets.push(target);
+        }
     }
 
     public remove(target: ILogTarget): void {
