@@ -10,7 +10,7 @@ export class LogFactory {
 
     public static getLogger(level: LogLevel) : ILogger {
         if (this.singleLogger == undefined) {
-            this.singleLogger = new Logger(level, []);
+            this.singleLogger = new Logger();
         }
         return this.singleLogger;
     }
