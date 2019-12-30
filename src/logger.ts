@@ -5,11 +5,12 @@ export class Logger implements ILogger {
     private level: LogLevel;
     private logTargets: ILogTarget[] = [];
 
-    constructor(level: LogLevel, targets: ILogTarget[]) {
-        this.level =
-            isNullOrUndefined(level)
-                ? level
-                : LogLevel.Debug | LogLevel.Error | LogLevel.Info | LogLevel.Warn;
+    constructor( level: LogLevel = LogLevel.Debug | LogLevel.Error | LogLevel.Info | LogLevel.Warn ) {
+        this.level = level;
+    }
+
+    public setLogLevel(level: LogLevel) {
+        this.level = level;
     }
 
     public add(target: ILogTarget): void {
@@ -18,7 +19,9 @@ export class Logger implements ILogger {
 
     public remove(target: ILogTarget): void {
         let i = this.logTargets.indexOf(target);
-        this.logTargets.splice(i, 1);
+        if (i >= 0) {
+            this.logTargets.splice(i, 1);
+        }
     }
 
     public log(text: any, ...args: any[]) {
