@@ -1,2 +1,2 @@
 export {ILogTarget, ILogger, LogLevel} from "./contracts"
-export {LogFactory} from "./targets"
+export {LogManager as LogFactory} from "./targets"

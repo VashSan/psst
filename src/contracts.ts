@@ -20,6 +20,12 @@ export interface ILogTarget {
  * an ILogTarget.
  */
 export interface ILogger {
+    /** 
+     * only messages with specified level and above will be logged. 
+     * @param level the logging level to write to the logtarget.
+     */
+    setLogLevel(level: LogLevel) : void;
+
     /**
      * Add a new log target to the logger
      * @param target is a new log target instance

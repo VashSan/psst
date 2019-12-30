@@ -5,18 +5,62 @@ import { isNullOrUndefined } from "util";
 import { Logger } from "./logger";
 import { LogLevel, ILogger, ILogTarget } from "./contracts";
 
-export class LogFactory { 
+export class LogManager { 
     private static singleLogger: ILogger;
+    private static consoleTarget: ILogTarget | undefined;
+    private static mapOfFileTargets: Map<string, ILogTarget>;
 
-    public static getLogger(level: LogLevel) : ILogger {
+    public static getLogger() : ILogger {
         if (this.singleLogger == undefined) {
             this.singleLogger = new Logger();
         }
         return this.singleLogger;
     }
 
+    public static addConsoleTarget() {
+        if (this.consoleTarget == undefined) {
+            this.consoleTarget = this.createConsoleTarget();
+        }
+        let logger = this.getLogger();
+        logger.add(this.consoleTarget);
+        return this.consoleTarget;
+    }
+
+    public static removeConsoleTarget() {
+        if (this.consoleTarget != undefined) {
+            let logger = this.getLogger();
+            logger.remove(this.consoleTarget);
+            this.consoleTarget = undefined;
+        }
+    }
+
     public static createConsoleTarget() : ILogTarget {
         return new ConsoleTarget();
+    }
+
+    public static addFileTarget(logPath: string, maxLogAgeDays: number) : void {
+        let fileTarget = this.mapOfFileTargets.get(logPath);
+        if (fileTarget != undefined){
+            return;
+        }
+
+        fileTarget = this.createFileTarget(logPath, maxLogAgeDays);
+        this.mapOfFileTargets.set(logPath, fileTarget);
+        
+        let logger = this.getLogger();
+        logger.add(fileTarget);
+    }
+
+    public static removeFileTarget(logPath: string) : void {
+        let fileTarget = this.mapOfFileTargets.get(logPath);
+        if (fileTarget == undefined) {
+            return;
+        }
+
+        this.mapOfFileTargets.delete(logPath);
+
+        let logger = this.getLogger();
+        logger.remove(fileTarget);    
     }
 
     public static createFileTarget(logPath: string, maxLogAgeDays: number) : ILogTarget {
