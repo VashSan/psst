@@ -8,11 +8,12 @@ import { LogLevel, ILogger, ILogTarget } from "./contracts";
 export class LogManager { 
     private static singleLogger: ILogger;
     private static consoleTarget: ILogTarget | undefined;
-    private static mapOfFileTargets: Map<string, ILogTarget>;
+    private static mapOfFileTargets: Map<string, ILogTarget> = new Map<string, ILogTarget>();
 
     public static getLogger() : ILogger {
         if (this.singleLogger == undefined) {
             this.singleLogger = new Logger();
+            this.addConsoleTarget();
         }
         return this.singleLogger;
     }
