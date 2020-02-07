@@ -1,5 +1,6 @@
 import * as moment from "moment";
 import * as fs from "fs";
+import * as chalk from "chalk";
 import { isNullOrUndefined } from "util";
 
 import { Logger } from "./logger";
@@ -74,21 +75,21 @@ class ConsoleTarget implements ILogTarget {
         let now =  moment();
         let time = now.format("hh:mm:ss.SSS");
         let text = `${time}\t${message}`;
-
+        
         switch (level) {
             case LogLevel.Debug:
-                console.log(text, ...args);
+                console.log(chalk.white(text), ...args);
                 break;
             case LogLevel.Info:
-                console.info(text, ...args);
+                console.info(chalk.whiteBright(text), ...args);
                 break;
             case LogLevel.Warn:
-                console.warn(text, ...args);
+                console.warn(chalk.yellowBright(text), ...args);
                 break;
             default:
             // all undefined levels are handled as error
             case LogLevel.Error:
-                console.error(text, ...args);
+                console.error(chalk.redBright(text), ...args);
                 console.trace();
         }
     }
