@@ -89,6 +89,7 @@ class ConsoleTarget implements ILogTarget {
             // all undefined levels are handled as error
             case LogLevel.Error:
                 console.error(text, ...args);
+                console.trace();
         }
     }
 }
