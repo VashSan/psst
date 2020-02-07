@@ -1,17 +1,16 @@
 import * as moment from "moment";
 import * as fs from "fs";
-import * as chalk from "chalk";
 import { isNullOrUndefined } from "util";
 
 import { Logger } from "./logger";
 import { LogLevel, ILogger, ILogTarget } from "./contracts";
 
-export class LogManager { 
+export class LogManager {
     private static singleLogger: ILogger;
     private static consoleTarget: ILogTarget | undefined;
     private static mapOfFileTargets: Map<string, ILogTarget> = new Map<string, ILogTarget>();
 
-    public static getLogger() : ILogger {
+    public static getLogger(): ILogger {
         if (this.singleLogger == undefined) {
             this.singleLogger = new Logger();
             this.addConsoleTarget();
@@ -36,24 +35,24 @@ export class LogManager {
         }
     }
 
-    public static createConsoleTarget() : ILogTarget {
+    public static createConsoleTarget(): ILogTarget {
         return new ConsoleTarget();
     }
 
-    public static addFileTarget(logPath: string, maxLogAgeDays: number) : void {
+    public static addFileTarget(logPath: string, maxLogAgeDays: number): void {
         let fileTarget = this.mapOfFileTargets.get(logPath);
-        if (fileTarget != undefined){
+        if (fileTarget != undefined) {
             return;
         }
 
         fileTarget = this.createFileTarget(logPath, maxLogAgeDays);
         this.mapOfFileTargets.set(logPath, fileTarget);
-        
+
         let logger = this.getLogger();
         logger.add(fileTarget);
     }
 
-    public static removeFileTarget(logPath: string) : void {
+    public static removeFileTarget(logPath: string): void {
         let fileTarget = this.mapOfFileTargets.get(logPath);
         if (fileTarget == undefined) {
             return;
@@ -62,34 +61,88 @@ export class LogManager {
         this.mapOfFileTargets.delete(logPath);
 
         let logger = this.getLogger();
-        logger.remove(fileTarget);    
+        logger.remove(fileTarget);
     }
 
-    public static createFileTarget(logPath: string, maxLogAgeDays: number) : ILogTarget {
+    public static createFileTarget(logPath: string, maxLogAgeDays: number): ILogTarget {
         return new FileTarget(logPath, maxLogAgeDays);
     }
+
+}
+
+class Colorize {
+    private static readonly color = {
+        Reset: "\x1b[0m",
+        Bright: "\x1b[1m",
+        Dim: "\x1b[2m",
+        Underscore: "\x1b[4m",
+        Blink: "\x1b[5m",
+        Reverse: "\x1b[7m",
+        Hidden: "\x1b[8m",
+
+        FgBlack: "\x1b[30m",
+        FgRed: "\x1b[31m",
+        FgGreen: "\x1b[32m",
+        FgYellow: "\x1b[33m",
+        FgBlue: "\x1b[34m",
+        FgMagenta: "\x1b[35m",
+        FgCyan: "\x1b[36m",
+        FgWhite: "\x1b[37m",
+
+        BgBlack: "\x1b[40m",
+        BgRed: "\x1b[41m",
+        BgGreen: "\x1b[42m",
+        BgYellow: "\x1b[43m",
+        BgBlue: "\x1b[44m",
+        BgMagenta: "\x1b[45m",
+        BgCyan: "\x1b[46m",
+        BgWhite: "\x1b[47m",
+    };
+
+    private colorize(color: string, text: string): string {
+        return `${color}${text}${Colorize.color.Reset}`;
+    }
+
+    public white(text: string): string {
+        return this.colorize(Colorize.color.FgWhite, text);
+    };
+
+    public red(text: string): string {
+        return this.colorize(Colorize.color.FgRed, text);
+    };
+
+    public green(text: string): string {
+        return this.colorize(Colorize.color.FgGreen, text);
+    };
+
+    public yellow(text: string): string {
+        return this.colorize(Colorize.color.FgYellow, text);
+    };
 }
 
 class ConsoleTarget implements ILogTarget {
+    private colorizer: Colorize = new Colorize();
+
     log(level: LogLevel, message: string, ...args: any[]) {
-        let now =  moment();
-        let time = now.format("hh:mm:ss.SSS");
-        let text = `${time}\t${message}`;
-        
+        const now = moment();
+        const time = now.format("hh:mm:ss.SSS");
+        const text = `${time}\t${message}`;
+        const c = this.colorizer;
+
         switch (level) {
             case LogLevel.Debug:
-                console.log(chalk.white(text), ...args);
+                console.log(c.white(text), ...args);
                 break;
             case LogLevel.Info:
-                console.info(chalk.whiteBright(text), ...args);
+                console.info(c.green(text), ...args);
                 break;
             case LogLevel.Warn:
-                console.warn(chalk.yellowBright(text), ...args);
+                console.warn(c.yellow(text), ...args);
                 break;
             default:
             // all undefined levels are handled as error
             case LogLevel.Error:
-                console.error(chalk.redBright(text), ...args);
+                console.error(c.red(text), ...args);
                 console.trace();
         }
     }

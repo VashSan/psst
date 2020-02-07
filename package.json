@@ -24,7 +24,6 @@
   "homepage": "https://github.com/VashSan/psst#readme",
   "dependencies": {
     "@types/node": "^11.11.3",
-    "chalk": "^3.0.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {
