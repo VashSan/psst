@@ -134,15 +134,15 @@ class ConsoleTarget implements ILogTarget {
                 console.log(c.white(text), ...args);
                 break;
             case LogLevel.Info:
-                console.info(c.green(text), ...args);
+                console.info('📗' + c.green(text), ...args);
                 break;
             case LogLevel.Warn:
-                console.warn(c.yellow(text), ...args);
+                console.warn('⚠️' + c.yellow(text), ...args);
                 break;
             default:
             // all undefined levels are handled as error
             case LogLevel.Error:
-                console.error(c.red(text), ...args);
+                console.error('🛑' + c.red(text), ...args);
                 console.trace();
         }
     }
